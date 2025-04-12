@@ -14,7 +14,7 @@
       background-color: #f8f8f8;
       text-align: center;
       margin: 20px 0;
-      border-radius: ;
+      border-radius: 6;
     }
 
     .feedback-form {

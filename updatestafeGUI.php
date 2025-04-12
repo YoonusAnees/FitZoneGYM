@@ -190,7 +190,7 @@ $row = mysqli_fetch_assoc($result);
 </header>
 
 <div id="upload_container">
-    <h2>Update Item</h2>
+    <h2>Update Staff</h2>
     <form action="ADMINupdatestaff.php" method="POST">
         <input type="hidden" name="updateID" value="<?php echo htmlspecialchars($row['id']); ?>">
 

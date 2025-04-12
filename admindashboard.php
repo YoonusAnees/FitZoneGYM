@@ -37,6 +37,7 @@ $resultuser = mysqli_query($conn, $queryuser);
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="css/dataTables.bootstrap5.min.css" />
     <link rel="stylesheet" href="css/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Admin Dashboard</title>
   </head>
   <body>
@@ -103,6 +104,18 @@ $resultuser = mysqli_query($conn, $queryuser);
           <div class="col-md-12"><h4>Dashboard</h4></div>
         </div>
 
+        <!-- Charts Section -->
+        <div class="row">
+          <div class="col-md-6">
+            <h5>Total Bookings</h5>
+            <canvas id="bookingChart"></canvas>
+          </div>
+          <div class="col-md-6">
+            <h5>Total Users</h5>
+            <canvas id="userChart"></canvas>
+          </div>
+        </div>
+
         <!-- Staff Table -->
         <div class="row">
           <div class="col-md-12 mb-3">
@@ -128,25 +141,25 @@ $resultuser = mysqli_query($conn, $queryuser);
                       </tr>
                     </thead>
                     <tbody>
-                    <?php
-                    if ($resultstaff && mysqli_num_rows($resultstaff) > 0) {
-                      while($row = mysqli_fetch_assoc($resultstaff)) {
-                        echo "<tr>
-                          <td>{$row['id']}</td>
-                          <td>{$row['FirstName']}</td>
-                          <td>{$row['LastName']}</td>
-                          <td>{$row['Mobilenumber']}</td>
-                          <td>{$row['UserAddress']}</td>
-                          <td>{$row['Email']}</td>
-                          <td>{$row['Password']}</td>
-                          <td><a href='updatestaffGUI.php?id={$row['id']}' class='btn btn-primary'>Edit</a></td>
-                          <td><a href='deletestaff.php?id={$row['id']}' class='btn btn-danger'>Delete</a></td>
-                        </tr>";
+                      <?php
+                      if ($resultstaff && mysqli_num_rows($resultstaff) > 0) {
+                        while ($row = mysqli_fetch_assoc($resultstaff)) {
+                          echo "<tr>
+                            <td>{$row['id']}</td>
+                            <td>{$row['FirstName']}</td>
+                            <td>{$row['LastName']}</td>
+                            <td>{$row['Mobilenumber']}</td>
+                            <td>{$row['UserAddress']}</td>
+                            <td>{$row['Email']}</td>
+                            <td>{$row['Password']}</td>
+                            <td><a href='updatestafeGUI.php?id={$row['id']}' class='btn btn-primary'>Edit</a></td>
+                            <td><a href='ADMINdeletestaff.php?id={$row['id']}' class='btn btn-danger'>Delete</a></td>
+                          </tr>";
+                        }
+                      } else {
+                        echo "<tr><td colspan='9'>No staff found.</td></tr>";
                       }
-                    } else {
-                      echo "<tr><td colspan='9'>No staff found.</td></tr>";
-                    }
-                    ?>
+                      ?>
                     </tbody>
                   </table>
                 </div>
@@ -155,7 +168,56 @@ $resultuser = mysqli_query($conn, $queryuser);
           </div>
         </div>
 
-        <!-- User Table -->
+        <!-- Booking Table (similar to Staff Table)-->
+        <div class="row">
+          <div class="col-md-12 mb-3">
+            <div class="card">
+              <div class="card-header">
+                <span><i class="bi bi-table me-2"></i></span> Booking Data Table
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-striped data-table" style="width: 100%">
+                    <thead>
+                      <tr>
+                        <th>Booking ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Class Name</th>
+                        <th>Class Schedule</th>
+                        <th>Class Price</th>
+                  
+                        <th>Delete</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php
+                      if ($result_booking && mysqli_num_rows($result_booking) > 0) {
+                        while ($row = mysqli_fetch_assoc($result_booking)) {
+                          echo "<tr>
+                            <td>{$row['id']}</td>
+                            <td>{$row['username']}</td>
+                            <td>{$row['email']}</td>
+                            <td>{$row['ClassName']}</td>
+                            <td>{$row['Schedule']}</td>
+                            <td>{$row['Price']}</td>
+              
+                            <td><a href='deletebooking.php?id={$row['id']}' class='btn btn-danger'>Delete</a></td>
+                          </tr>";
+                        }
+                      } else {
+                        echo "<tr><td colspan='6'>No bookings found.</td></tr>";
+                      }
+                      ?>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Table (similar to Booking Table)-->
         <div class="row">
           <div class="col-md-12 mb-3">
             <div class="card">
@@ -164,10 +226,10 @@ $resultuser = mysqli_query($conn, $queryuser);
               </div>
               <div class="card-body">
                 <div class="table-responsive">
-                  <table id="userTable" class="table table-striped data-table" style="width: 100%">
+                  <table class="table table-striped data-table" style="width: 100%">
                     <thead>
                       <tr>
-                        <th>ID</th>
+                        <th>User ID</th>
                         <th>Username</th>
                         <th>Email</th>
                         <th>Edit</th>
@@ -175,21 +237,21 @@ $resultuser = mysqli_query($conn, $queryuser);
                       </tr>
                     </thead>
                     <tbody>
-                    <?php
-                    if ($resultuser && mysqli_num_rows($resultuser) > 0) {
-                      while($row = mysqli_fetch_assoc($resultuser)) {
-                        echo "<tr>
-                          <td>{$row['id']}</td>
-                          <td>{$row['username']}</td>
-                          <td>{$row['email']}</td>
-                          <td><a href='updateuserGUI.php?id={$row['id']}'class='btn btn-primary'>Edit</a></td>
-                          <td><a href='deleteuser.php?id={$row['id']}' class='btn btn-danger'>Delete</a></td>
-                        </tr>";
+                      <?php
+                      if ($resultuser && mysqli_num_rows($resultuser) > 0) {
+                        while ($row = mysqli_fetch_assoc($resultuser)) {
+                          echo "<tr>
+                            <td>{$row['id']}</td>
+                            <td>{$row['username']}</td>
+                            <td>{$row['email']}</td>
+                            <td><a href='updateusers.php?id={$row['id']}' class='btn btn-primary'>Edit</a></td>
+                            <td><a href='deleteusers.php?id={$row['id']}' class='btn btn-danger'>Delete</a></td>
+                          </tr>";
+                        }
+                      } else {
+                        echo "<tr><td colspan='3'>No users found.</td></tr>";
                       }
-                    } else {
-                      echo "<tr><td colspan='5'>No users found.</td></tr>";
-                    }
-                    ?>
+                      ?>
                     </tbody>
                   </table>
                 </div>
@@ -197,61 +259,64 @@ $resultuser = mysqli_query($conn, $queryuser);
             </div>
           </div>
         </div>
-
-        <!-- Booking Table -->
-        <div class="row">
-          <div class="col-md-12 mb-3">
-            <div class="card">
-              <div class="card-header">
-                <span><i class="bi bi-table me-2"></i></span> Booking Confirmation Table
-              </div>
-              <div class="card-body">
-                <div class="table-responsive">
-                  <table id="bookingTable" class="table table-striped data-table" style="width: 100%">
-                    <thead>
-                      <tr>
-                        <th>Booking ID</th>
-                        <th>User Name</th>
-                        <th>Email</th>
-                        <th>Class Name</th>
-                        <th>Schedule</th>
-                        <th>Price</th>
-                        <th>Delete</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                    if ($result_booking && mysqli_num_rows($result_booking) > 0) {
-                      while($row_booking = mysqli_fetch_assoc($result_booking)) {
-                        echo "<tr>
-                          <td>{$row_booking['id']}</td>
-                          <td>{$row_booking['username']}</td>
-                          <td>{$row_booking['email']}</td>
-                          <td>{$row_booking['ClassName']}</td>
-                          <td>{$row_booking['Schedule']}</td>
-                          <td>LKR " . number_format($row_booking['Price'], 2) . "</td>
-                          <td><a href='deletebooking.php?id={$row_booking['id']}' class='btn btn-danger'>Delete</a></td>
-                        </tr>";
-                      }
-                    } else {
-                      echo "<tr><td colspan='7'>No bookings found.</td></tr>";
-                    }
-                    ?>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
     </main>
 
-    <!-- Bootstrap JS and dependencies -->
+    <!-- Scripts -->
     <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/jquery-3.6.0.min.js"></script>
-    <script src="js/datatables.min.js"></script>
-   
+    <script src="js/jquery.min.js"></script>
+    <script src="js/dataTables.bootstrap5.min.js"></script>
+    <script>
+      const totalUsers = <?php echo mysqli_num_rows($resultuser); ?>;
+      const totalBookings = <?php echo mysqli_num_rows($result_booking); ?>;
+
+      // Total Bookings Chart
+      const ctxBooking = document.getElementById('bookingChart').getContext('2d');
+      const bookingChart = new Chart(ctxBooking, {
+        type: 'bar',
+        data: {
+          labels: ['Total Bookings'],
+          datasets: [{
+            label: 'Bookings',
+            data: [totalBookings],
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+
+      // Total Users Chart
+      const ctxUser = document.getElementById('userChart').getContext('2d');
+      const userChart = new Chart(ctxUser, {
+        type: 'bar',
+        data: {
+          labels: ['Total Users'],
+          datasets: [{
+            label: 'Users',
+            data: [totalUsers],
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    </script>
   </body>
 </html>
